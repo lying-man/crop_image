@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Скриншот | Картинка | Скриншот в картинку</title>
+    <link rel="stylesheet" href="lib/cropper.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="wrapper">
+        <header>
+            <h1>Картинка в Скриншот</h1>
+            <div class="header-text">
+                <div class="header-text-item">
+                    Порой необходимо создать из скриншота экрана картинку (файл)
+                </div>
+                <div class="header-text-item">
+                    Такую задачу решает этот полезный сервис преобразования картинки в скриншот
+                </div>
+                <div class="header-text-item">
+                    Просто прожмите комбинацию клавиш <span>Ctrl + B</span> и скриншот преобразуется в картинку или просто добавьте скриншот через кнопку ниже
+                </div>
+            </div>
+        </header>
+        <div class="action">
+            <button class="generate">
+                <span>СГЕНЕРИРОВАТЬ</span>
+                <img src="img/camera.svg" alt="картинка камеры">
+            </button>
+        </div>
+        <div class="hint">
+            Вы можете сделать скриншот экрана на компьютере, нажатием клавиши <span>PrintScreen</span>
+        </div>
+    </div>
+
+    <div class="overlay"></div>
+
+    <div class="notice"><div class="notice-content">скриншот загружается</div></div>
+
+    <div class="crop-modal-choice">
+        <h2 class="crop-modal-choice-title">Вы Хотите Отредактировать Скриншот, Перед Началом Скачивания Файла?</h2>
+        <div class="crop-modal-choice-actions">
+            <button class="start-crop">Да, хочу</button>
+            <button class="not-crop">Нет, не нужно</button>
+        </div>
+    </div>
+
+    <div class="crop-modal-content">
+        <button class="crop-modal-content-close"><img src="img/cross.svg" alt="картинка крестика для закрытия модального окна"></button>
+        <div class="wrapper-anim">
+
+            <div class="crop-modal-content-header">
+                <h2 class="crop-modal-status">Обрезка Скриншота</h2>
+                <div class="crop-modal-steps">
+                    <div class="step-one active">1</div>
+                    <div class="step-line"></div>
+                    <div class="step-two">2</div>
+                </div>
+            </div>
+
+            <div class="crop-modal-content-toolbar">
+                <div class="adjust-btns">
+                    <button class="undo disabled" disabled><img src="img/arrow-tl-left.svg" alt="стрелка изменения действия"></button>
+                    <button class="redo disabled" disabled><img src="img/arrow-tl-right.svg" alt="стрелка изменения действия"></button>
+                </div>
+                <div class="colors-btns">
+                    <button class="colors-btns-item" data-color="#FF1212"><img src="img/checked.svg" alt="картинка выделения активного цвета" /></button>
+                    <button class="colors-btns-item active" data-color="#000"><img src="img/checked.svg" alt="картинка выделения активного цвета" /></button>
+                    <button class="colors-btns-item" data-color="#fff"><img src="img/checked.svg" alt="картинка выделения активного цвета" /></button>
+                    <button class="colors-btns-item" data-color="#0008CB"><img src="img/checked.svg" alt="картинка выделения активного цвета" /></button>
+                    <button class="colors-btns-item" data-color="#0DC50D"><img src="img/checked.svg" alt="картинка выделения активного цвета" /></button>
+                    <button class="colors-btns-item" data-color="#ED7920"><img src="img/checked.svg" alt="картинка выделения активного цвета" /></button>
+                </div>
+                <div class="tool-block">
+                    <button class="tool-btn active">
+                        <img src="img/hand-highlight.svg" alt="картинка перемещения" />
+                        <img src="img/pen_icon.svg" alt="картинка рисования">
+                    </button>
+                    <div class="brush-btns">
+                        <button class="brush-btns-size active" data-size="6"></button>
+                        <button class="brush-btns-size" data-size="10"></button>
+                        <button class="brush-btns-size" data-size="20"></button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="crop-modal-wrapper">
+                <img class="crop-modal-img-cvn" src="" alt="картинка для обрезания">
+                <div class="canvas-block">
+                    <div class="canvas-wrapper">
+                        <canvas width="620" height="360" class="canvas"></canvas>
+                    </div>
+                    <div class="screensaver active">
+                        <div class="screensaver-content">
+                            <h2>Подсказка</h2>
+                            <div class="screensaver-content-block">Покрутите колёсико мыши, для увеличения или уменьшения картинки</div>
+                            <div class="screensaver-content-block">Нажатием на кнопку руки, можно регулировать режимы перетаскивания картинки и рисования</div>
+                            <button class="screensaver-close">OK</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="crop-modal-content-footer">
+                <button class="download-crop-btn">Скачать Обрезанное Изображение</button>
+                <button class="next-highlight-btn">Выделение На Скриншоте</button>
+                <button class="reset-highlight">Сбросить к Исходному Состоянию</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="custom-cursor">
+        <img src="img/pen.svg" alt="пользовательский курсор">
+    </div>
+
+    <script src="lib/cropper.js"></script>
+    <script src="main.js"></script>
+</body>
+</html>
