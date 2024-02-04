@@ -20,6 +20,8 @@ if (!(/Android|webOS|iPhone|iPad|iPod|BlackBerry|BB|PlayBook|IEMobile|Windows Ph
     let currentColor = "#000";
     let isAction = false;
 
+    let acceptedTypes = ["image/png", "image/jpg", "image/jpeg", "image/svg"];
+
     let isShowedScreensaver = localStorage.getItem("isShowedScreensaver");
 
     //elements
@@ -32,7 +34,8 @@ if (!(/Android|webOS|iPhone|iPad|iPod|BlackBerry|BB|PlayBook|IEMobile|Windows Ph
     const $notice = document.querySelector(".notice");
     const $noticeContent = document.querySelector(".notice-content");
     const $overlay = document.querySelector(".overlay");
-    const $btnGenerateImage = document.querySelector(".generate");
+    const $btnAddImage = document.querySelector(".generate");
+    const $fileInput = document.querySelector('input[type="file"]');
 
     const $cropModalChoice = document.querySelector(".crop-modal-choice");
     const $btnStartCrop = document.querySelector(".start-crop");
@@ -74,7 +77,7 @@ if (!(/Android|webOS|iPhone|iPad|iPod|BlackBerry|BB|PlayBook|IEMobile|Windows Ph
         const downloadLink = document.createElement("a");
         downloadLink.className = "download-link";
         downloadLink.setAttribute("href", currentImageSrc);
-        downloadLink.setAttribute("download", "Your screenshoot");
+        downloadLink.setAttribute("download", "Ваше изображение");
         document.body.append(downloadLink);
         downloadLink.click();
         downloadLink.remove();
@@ -113,6 +116,7 @@ if (!(/Android|webOS|iPhone|iPad|iPod|BlackBerry|BB|PlayBook|IEMobile|Windows Ph
             }
 
             toggleCropModalContent("show");
+            toggleOverlayVisibility("show");
 
         }, 300);
     }
@@ -225,7 +229,7 @@ if (!(/Android|webOS|iPhone|iPad|iPod|BlackBerry|BB|PlayBook|IEMobile|Windows Ph
     function toggleCropModalTitle(mode) {
         $cropModalTitle.classList.add("hide");
         setTimeout(() => {
-            mode === "next" ? $cropModalTitle.textContent = "Разметка скриншота" : $cropModalTitle.textContent = "Обрезка скриншота";
+            mode === "next" ? $cropModalTitle.textContent = "Разметка Изображения" : $cropModalTitle.textContent = "Обрезка Изображения";
             $cropModalTitle.classList.remove("hide");
         }, 300);
     }
@@ -370,8 +374,9 @@ if (!(/Android|webOS|iPhone|iPad|iPod|BlackBerry|BB|PlayBook|IEMobile|Windows Ph
         } else { $overlay.classList.remove("active"); }
     }
 
-    async function generateImage() {
+    async function handleScreenshootFn() {
         try {
+
             let items = await window.navigator.clipboard.read();
             let item = items[0];
 
@@ -387,17 +392,45 @@ if (!(/Android|webOS|iPhone|iPad|iPod|BlackBerry|BB|PlayBook|IEMobile|Windows Ph
 
                 reader.readAsDataURL(blob);
             } else {
-                showNotice({ mode: "failure", text: "Вы пытаетесь скачать не скриншот" });
+                showNotice({ mode: "failure", text: "Вы пытаетесь загрузить не скриншот" });
             }
 
         } catch(e) {
             showNotice({ mode: "failure", text: "Что то пошло не так, повторите снова" });
         }
     }
+
+    function addImage() {
+        $fileInput.click();
+    }
+
+    function getFile() {
+        if (this.files) {
+
+            let file = this.files[0];
+
+            if (!acceptedTypes.includes(file.type)) {
+                showNotice({ mode: "failure", text: "Добавленный тип данных не поддерживается" });
+                return;
+            }
+
+            let reader = new FileReader();
+
+            reader.readAsDataURL(file);
+
+            reader.onload = () => {
+                currentImageSrc = reader.result;
+                startCrop();
+            }
+
+            reader.onerror = () => showNotice({ mode: "failure", text: "При загрузке картинки произошла ошибка, попробуйте снова" });
+
+        }
+    }
     
     function keyboardHandler(e) {
         let code = e.code;
-        if (e.ctrlKey && code === "KeyB") generateImage();
+        if (e.ctrlKey && code === "KeyB") handleScreenshootFn();
     }
 
     //drag and draw
@@ -572,7 +605,8 @@ if (!(/Android|webOS|iPhone|iPad|iPod|BlackBerry|BB|PlayBook|IEMobile|Windows Ph
     document.documentElement.addEventListener("mouseup", mouseupGlobalHandler);
     document.documentElement.addEventListener("mousemove", customCursorMove);
 
-    $btnGenerateImage.addEventListener("click", generateImage);
+    $btnAddImage.addEventListener("click", addImage);
+    $fileInput.addEventListener("change", getFile);
 
     $btnStartCrop.addEventListener("click", startCrop);
     $btnCancelCrop.addEventListener("click", cancelCrop);
