@@ -483,7 +483,52 @@ h2 {
     transition: none;
 }
 
-/* 28px */
+.download-crop-btn {
+    position: relative;
+}
+
+.download-crop-btn .actions {
+    position: absolute;
+    background-color: #1d1d1d;
+    color: #fff;
+    display: flex;
+    border-radius: 3px;
+    top: 0;
+    left: 50%;
+    transform: translate(-50%, calc(-100% - 12px)) scale(0.2);
+    display: inline-flex;
+    justify-content: space-between;
+    align-items: center;
+    visibility: hidden;
+    opacity: 0;
+    pointer-events: none;
+    transition: all .2s cubic-bezier(0.68, -0.6, 0.32, 1.6);
+}
+
+.download-crop-btn .actions.active {
+    visibility: visible;
+    opacity: 1;
+    pointer-events: auto;
+    transform: translate(-50%, calc(-100% - 12px)) scale(1);
+    transition: all .2s cubic-bezier(0.68, -0.6, 0.32, 1.6);
+}
+
+.download-crop-btn .actions img {
+    position: absolute;
+    z-index: -1;
+    pointer-events: none;
+    width: 18px;
+    height: 18px;
+    bottom: -11px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.download-crop-btn .actions span { padding: 5px; border-radius: 3px; }
+
+.download-crop-btn .actions .action-download:hover { background-color: #444444; }
+.download-crop-btn .actions .action-copy:hover { background-color: #444444; }
+
 .crop-modal-content-toolbar {
     display: flex;
     align-items: center;
