@@ -525,9 +525,7 @@ h2 {
 }
 
 .download-crop-btn .actions span { padding: 5px; border-radius: 3px; }
-
-.download-crop-btn .actions .action-download:hover { background-color: #444444; }
-.download-crop-btn .actions .action-copy:hover { background-color: #444444; }
+.download-crop-btn .actions span:hover { background-color: #444444; }
 
 .crop-modal-content-toolbar {
     display: flex;
