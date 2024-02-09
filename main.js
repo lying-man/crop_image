@@ -58,6 +58,11 @@ if (!(/Android|webOS|iPhone|iPad|iPod|BlackBerry|BB|PlayBook|IEMobile|Windows Ph
 
     const $drawCursor = document.querySelector(".custom-cursor");
 
+    const $downloadContentBtn = document.querySelector(".download-crop-btn .content");
+    const $downloadBtnActions = document.querySelector(".download-crop-btn .actions");
+    const $copyImageBtn = $downloadBtnActions.querySelector(".action-copy");
+    const $downloadImageBtn = $downloadBtnActions.querySelector(".action-download");
+
     //toolbar
     const $btnUndo = document.querySelector(".undo");
     const $btnRedo = document.querySelector(".redo");
@@ -73,30 +78,59 @@ if (!(/Android|webOS|iPhone|iPad|iPod|BlackBerry|BB|PlayBook|IEMobile|Windows Ph
 
     const ctx = $canvas.getContext("2d");
 
-    function downloadImage() {
-        const downloadLink = document.createElement("a");
-        downloadLink.className = "download-link";
-        downloadLink.setAttribute("href", currentImageSrc);
-        downloadLink.setAttribute("download", "Ваше изображение");
-        document.body.append(downloadLink);
-        downloadLink.click();
-        downloadLink.remove();
+    async function actionImage(type, imageSrc, blobImage) {
 
-        showNotice({ mode: "success", text: "Скриншот загружается" });
+        if (type === "download") {
+            const downloadLink = document.createElement("a");
+            downloadLink.className = "download-link";
+            downloadLink.setAttribute("href", imageSrc);
+            downloadLink.setAttribute("download", "Ваше изображение");
+            document.body.append(downloadLink);
+            downloadLink.click();
+            downloadLink.remove();
+
+            showNotice({ mode: "success", text: "Скриншот загружается" });
+            return;
+        }
+
+        let buffer = new window.ClipboardItem({
+            [blobImage.type]: blobImage
+        });
+
+        await window.navigator.clipboard.write([buffer]);
+        showNotice({ mode: "success", text: "Скриншот скопирован в буфер обмена" });
+
     }
 
-    function downloadHandler() {
+    function downloadHandler(type) {
 
-        if (isLastStage) {
-            currentImageSrc = $canvas.toDataURL("image/png");
+        let blobImage = null;
+        let imageSrc = null;
+        let sourceCanvas = isLastStage ? $canvas : cropInstance.getCroppedCanvas({});
+
+        if (type === "copy") {
+            sourceCanvas.toBlob((blob) => blobImage = blob);
         } else {
-            currentImageSrc = cropInstance.getCroppedCanvas({}).toDataURL();
+            imageSrc = sourceCanvas.toDataURL("image/png");
         }
 
         toggleCropModalContent("hide");
 
-        setTimeout(() => downloadImage(), 600);
+        setTimeout(() => actionImage(type, imageSrc, blobImage), 600);
 
+    }
+
+    function toggleDownloadActions(mode) {
+        if (mode === "show") {
+            $downloadBtnActions.classList.add("active");
+        } else {
+            $downloadBtnActions.classList.remove("active");
+        }
+    }
+
+    function downloadActionsCloseHandler(e) {
+        if (e.target.closest(".download-crop-btn")) return;
+        if ($downloadBtnActions.classList.contains("active")) $downloadBtnActions.classList.remove("active");
     }
 
     function startCrop() {
@@ -123,7 +157,7 @@ if (!(/Android|webOS|iPhone|iPad|iPod|BlackBerry|BB|PlayBook|IEMobile|Windows Ph
 
     function cancelCrop() {
         toggleCropModalChoice("hide");
-        setTimeout(downloadImage, 300);
+        setTimeout(actionImage, 300);
     }
 
     function cropModalContentClose() {
@@ -250,11 +284,11 @@ if (!(/Android|webOS|iPhone|iPad|iPod|BlackBerry|BB|PlayBook|IEMobile|Windows Ph
         setTimeout(() => {
             if (mode === "next") {
                 $resetHighlight.classList.add("show");
-                $btnCropDownload.textContent = "Скачать";
+                $downloadContentBtn.textContent = "Скачать";
                 $btnNextStep.textContent = "Назад";
             } else {
                 $resetHighlight.classList.remove("show");
-                $btnCropDownload.textContent = "Скачать Обрезанное Изображение";
+                $downloadContentBtn.textContent = "Скачать Обрезанное Изображение";
                 $btnNextStep.textContent = "Выделение На Скриншоте";
             }
             setTimeout(() => footerListActions.forEach(el => el.classList.remove("hide")), 50);
@@ -604,6 +638,7 @@ if (!(/Android|webOS|iPhone|iPad|iPod|BlackBerry|BB|PlayBook|IEMobile|Windows Ph
     document.documentElement.addEventListener("wheel", zoomHandler);
     document.documentElement.addEventListener("mouseup", mouseupGlobalHandler);
     document.documentElement.addEventListener("mousemove", customCursorMove);
+    document.documentElement.addEventListener("click", downloadActionsCloseHandler);
 
     $btnAddImage.addEventListener("click", addImage);
     $fileInput.addEventListener("change", getFile);
@@ -614,8 +649,9 @@ if (!(/Android|webOS|iPhone|iPad|iPod|BlackBerry|BB|PlayBook|IEMobile|Windows Ph
     $cropModalContentClose.addEventListener("click", cropModalContentClose);
 
     $btnNextStep.addEventListener("click", moveToStage);
-    $btnCropDownload.addEventListener("click", downloadHandler);
-
+    $btnCropDownload.addEventListener("click", () => toggleDownloadActions( $downloadBtnActions.classList.contains("active") ? "hide" : "show"));
+    $copyImageBtn.addEventListener("click", () => downloadHandler("copy"));
+    $downloadImageBtn.addEventListener("click", () => downloadHandler("download"));
 
     $btnCloseScreensaver.addEventListener("click", setShowedScreensaver);
 
